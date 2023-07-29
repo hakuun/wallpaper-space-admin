@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import AuthForm from "@/components/auth-form";
+import AuthForm from "@/components/form/auth-form";
 
 const Auth = async () => {
   return (
