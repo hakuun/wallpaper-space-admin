@@ -16,22 +16,24 @@ const WallpaperPage = async ({
     },
   });
 
-  if (!wallpaper) return null;
+  let initialData: WallpaperFormInitialData | null = null;
 
-  const initialData: WallpaperFormInitialData = {
-    ...wallpaper,
-    images: [
-      {
-        assetId: wallpaper.assetId,
-        publicid: wallpaper.publicid,
-        height: wallpaper.height,
-        width: wallpaper.width,
-        secureUrl: wallpaper.secureUrl,
-        url: wallpaper.url,
-        format: wallpaper.format,
-      },
-    ],
-  };
+  if (wallpaper) {
+    initialData = {
+      ...wallpaper,
+      images: [
+        {
+          assetId: wallpaper.assetId,
+          publicId: wallpaper.publicId,
+          height: wallpaper.height,
+          width: wallpaper.width,
+          secureUrl: wallpaper.secureUrl,
+          url: wallpaper.url,
+          format: wallpaper.format,
+        },
+      ],
+    };
+  }
 
   const categories = await prisma.category.findMany();
 

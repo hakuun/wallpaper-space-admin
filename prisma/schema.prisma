@@ -61,7 +61,7 @@ model Wallpaper {
   categoryId  String
   isPublished Boolean
   assetId     String
-  publicid    String
+  publicId    String
   height      Int
   width       Int
   secureUrl   String

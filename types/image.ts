@@ -3,7 +3,7 @@ import { Wallpaper } from "@prisma/client";
 
 export const Image = z.object({
   assetId: z.string(),
-  publicid: z.string(),
+  publicId: z.string(),
   height: z.number(),
   width: z.number(),
   secureUrl: z.string(),

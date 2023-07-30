@@ -89,7 +89,7 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
       setLoading(true);
       const { images, isPublished, categoryId } = values;
 
-      const all = images.map((image) => {
+      const allRequest = images.map((image) => {
         const wallpaper = {
           ...image,
           categoryId,
@@ -98,7 +98,11 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
         return makeRequest(wallpaper);
       });
 
-      await Promise.all(all);
+      if (!allRequest) {
+        return toast.error("please upload images");
+      }
+
+      await Promise.all(allRequest);
 
       router.refresh();
       router.push(`/wallpaper`);

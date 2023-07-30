@@ -37,7 +37,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }
       const value: ImageType = {
         assetId: result.info.asset_id,
-        publicid: result.info.public_id,
+        publicId: result.info.public_id,
         height: result.info.height,
         width: result.info.width,
         secureUrl: result.info.secure_url,
