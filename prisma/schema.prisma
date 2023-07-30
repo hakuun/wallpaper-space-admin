@@ -54,20 +54,19 @@ model Category {
 }
 
 model Wallpaper {
-  id         String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-  image      Image    @relation(fields: [imageId], references: [id])
-  imageId    String
-  imageUrl   String
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  isPublished Boolean
+  assetId     String
+  publicid    String
+  height      Int
+  width       Int
+  secureUrl   String
+  url         String
+  format      String
 
   @@index([categoryId])
-  @@index([imageId])
-}
-
-model Image {
-  id        String      @id @default(uuid())
-  Wallpaper Wallpaper[]
 }

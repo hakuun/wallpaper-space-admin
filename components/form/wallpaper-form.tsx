@@ -10,6 +10,7 @@ import { Wallpaper, Category } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -17,6 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Heading } from "@/components/ui/heading";
@@ -29,16 +31,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ImageUpload from "@/components/ui/image-upload";
+import { Image, WallpaperFormInitialData } from "@/types/image";
 
 const formSchema = z.object({
-  imageUrl: z.string().min(1),
   categoryId: z.string().min(1),
+  isPublished: z.boolean(),
+  images: z.array(Image),
 });
 
 type WallpaperFormValues = z.infer<typeof formSchema>;
 
 interface WallpaperFormProps {
-  initialData: Wallpaper | null;
+  initialData: WallpaperFormInitialData | null;
   categories: Category[];
 }
 
@@ -50,6 +54,7 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
+  const [folder, setFolder] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit wallpaper" : "Create wallpaper";
@@ -62,25 +67,39 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
   const form = useForm<WallpaperFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      imageUrl: "",
       categoryId: "",
+      isPublished: false,
+      images: [],
     },
   });
 
-  const onSubmit = async (data: WallpaperFormValues) => {
+  function makeRequest(data: any) {
+    const method = initialData ? "PATCH" : "POST";
+    const url = initialData
+      ? `/api/wallpaper/${params.wallpaperId}`
+      : "/api/wallpaper";
+    return fetch(url, {
+      method,
+      body: JSON.stringify(data),
+    });
+  }
+
+  const onSubmit = async (values: WallpaperFormValues) => {
     try {
       setLoading(true);
-      if (initialData) {
-        await fetch(`/api/wallpaper/${params.wallpaperId}`, {
-          method: "PATCH",
-          body: JSON.stringify(data),
-        });
-      } else {
-        await fetch(`/api/wallpaper`, {
-          method: "POST",
-          body: JSON.stringify(data),
-        });
-      }
+      const { images, isPublished, categoryId } = values;
+
+      const all = images.map((image) => {
+        const wallpaper = {
+          ...image,
+          categoryId,
+          isPublished,
+        };
+        return makeRequest(wallpaper);
+      });
+
+      await Promise.all(all);
+
       router.refresh();
       router.push(`/wallpaper`);
       toast.success(toastMessage);
@@ -109,6 +128,11 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
       setOpen(false);
     }
   };
+
+  function handleSetFolder(id: string) {
+    const seletedCategroy = categories.find((category) => category.id === id);
+    setFolder(seletedCategroy?.name);
+  }
 
   return (
     <>
@@ -139,16 +163,28 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
         >
           <FormField
             control={form.control}
-            name="imageUrl"
+            name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Wallpaper image</FormLabel>
+                <FormLabel>Images</FormLabel>
                 <FormControl>
                   <ImageUpload
-                    value={field.value ? [field.value] : []}
+                    uploadOptions={{
+                      multiple: true,
+                      folder,
+                    }}
+                    value={field.value}
                     disabled={loading}
-                    onChange={(url) => field.onChange(url)}
-                    onRemove={() => field.onChange("")}
+                    onChange={(image) =>
+                      field.onChange([...field.value, { ...image }])
+                    }
+                    onRemove={(image) =>
+                      field.onChange([
+                        ...field.value.filter(
+                          (current) => current.assetId !== image.assetId
+                        ),
+                      ])
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -164,7 +200,10 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
                   <FormLabel>Category</FormLabel>
                   <Select
                     disabled={loading}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      handleSetFolder(value);
+                    }}
                     value={field.value}
                     defaultValue={field.value}
                   >
@@ -185,6 +224,26 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isPublished"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Published</FormLabel>
+                    <FormDescription>
+                      This wallpaper will appear on the home page
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />

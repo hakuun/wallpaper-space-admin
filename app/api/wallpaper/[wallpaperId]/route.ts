@@ -65,10 +65,6 @@ export async function PATCH(
     }
     const data = await request.json();
 
-    if (!data.name) {
-      return new NextResponse("Name is required", { status: 400 });
-    }
-
     if (!params.wallpaperId) {
       return new NextResponse("Category id is required", { status: 400 });
     }

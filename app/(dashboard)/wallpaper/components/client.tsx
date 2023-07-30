@@ -30,7 +30,7 @@ export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
         </Button>
       </div>
       <Separator />
-      <DataTable searchKey="name" columns={columns} data={data} />
+      <DataTable searchKey="url" columns={columns} data={data} />
       <Heading title="API" description="API Calls for Wallpaper" />
       <Separator />
       <ApiList entityName="wallpaper" entityIdName="wallpaperId" />

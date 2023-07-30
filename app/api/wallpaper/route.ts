@@ -24,19 +24,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
-    if (!params.id) {
-      return new NextResponse("id is required", { status: 400 });
-    }
-
     const wallpaper = await prisma.wallpaper.findMany({
-      where: {
-        id: params.id,
-      },
+      where: {},
     });
 
     return NextResponse.json(wallpaper);

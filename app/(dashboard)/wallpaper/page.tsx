@@ -14,7 +14,8 @@ const WallpaperPage = async () => {
 
   const formattedWallpaper: WallpaperColumn[] = wallpaper.map((item) => ({
     id: item.id,
-    imageUrl: item.imageUrl,
+    url: item.url,
+    isPublished: item.isPublished,
     createdAt: format(item.createdAt, "yyyy-MM-dd hh:mm:ss"),
   }));
 

@@ -1,17 +1,19 @@
 "use client";
 
-import { CldUploadWidget } from "next-cloudinary";
+import { CldUploadWidget, CldUploadWidgetPropsOptions } from "next-cloudinary";
 import { useEffect, useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ImagePlus, Trash } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { ImageType } from "@/types/image";
+
 interface ImageUploadProps {
   disabled?: boolean;
-  onChange: (value: string) => void;
-  onRemove: (value: string) => void;
-  value: string[];
+  onChange: (value: ImageType) => void;
+  onRemove: (value: ImageType) => void;
+  value: ImageType[];
+  uploadOptions?: CldUploadWidgetPropsOptions;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -19,6 +21,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   onChange,
   onRemove,
   value,
+  uploadOptions,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -27,7 +30,24 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   }, []);
 
   const onUpload = (result: any) => {
-    onChange(result.info.secure_url);
+    try {
+      if (result.error) {
+        console.log(result.error);
+        return;
+      }
+      const value: ImageType = {
+        assetId: result.info.asset_id,
+        publicid: result.info.public_id,
+        height: result.info.height,
+        width: result.info.width,
+        secureUrl: result.info.secure_url,
+        url: result.info.url,
+        format: result.info.format,
+      };
+      onChange(value);
+    } catch (error) {
+      console.error("upload image error", error);
+    }
   };
 
   if (!isMounted) {
@@ -37,26 +57,30 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div>
       <div className="mb-4 flex items-center gap-4">
-        {value.map((url) => (
+        {value.map((image) => (
           <div
-            key={url}
+            key={image.url}
             className="relative w-[200px] h-[200px] rounded-md overflow-hidden"
           >
             <div className="z-10 absolute top-2 right-2">
               <Button
                 type="button"
-                onClick={() => onRemove(url)}
+                onClick={() => onRemove(image)}
                 variant="destructive"
                 size="sm"
               >
                 <Trash className="h-4 w-4" />
               </Button>
             </div>
-            <Image fill className="object-cover" alt="Image" src={url} />
+            <Image fill className="object-cover" alt="Image" src={image.url} />
           </div>
         ))}
       </div>
-      <CldUploadWidget onUpload={onUpload} uploadPreset="anlv12ke">
+      <CldUploadWidget
+        options={uploadOptions}
+        onUpload={onUpload}
+        uploadPreset="anlv12ke"
+      >
         {({ open }) => {
           const onClick = () => {
             open();
