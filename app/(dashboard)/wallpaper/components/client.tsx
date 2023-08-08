@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { RiDeleteBin5Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,8 @@ interface WallpaperClientProps {
 export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
   const router = useRouter();
 
+  function handleDeleteSelected() {}
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -25,9 +28,18 @@ export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
           title={`Wallpaper (${data.length})`}
           description="Manage wallpaper"
         />
-        <Button onClick={() => router.push(`/wallpaper/new`)}>
-          <Plus className="mr-2 h-4 w-4" /> Add New
-        </Button>
+        <div>
+          <Button
+            className="mr-4"
+            variant="destructive"
+            onClick={handleDeleteSelected}
+          >
+            <RiDeleteBin5Line className="mr-2 h-4 w-4" /> Delete Selected
+          </Button>
+          <Button onClick={() => router.push(`/wallpaper/new`)}>
+            <Plus className="mr-2 h-4 w-4" /> Add New
+          </Button>
+        </div>
       </div>
       <Separator />
       <DataTable searchKey="url" columns={columns} data={data} />
