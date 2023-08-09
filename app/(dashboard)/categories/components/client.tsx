@@ -10,13 +10,35 @@ import { Separator } from "@/components/ui/separator";
 
 import { columns, CategoryColumn } from "./columns";
 import { ApiList } from "@/components/ui/api-list";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 interface CategoriesClientProps {
   data: CategoryColumn[];
 }
 
 export const CategoriesClient: React.FC<CategoriesClientProps> = ({ data }) => {
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+
+  async function handleDeleteSelected(selection: CategoryColumn[]) {
+    const ids = selection.map((row) => row.id);
+    try {
+      setLoading(true);
+      await fetch(`/api/categories`, {
+        method: "DELETE",
+        body: JSON.stringify(ids),
+      });
+      toast.success("Wallpaper deleted.");
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        "Make sure you removed all products using this wallpaper first."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <>
@@ -25,12 +47,9 @@ export const CategoriesClient: React.FC<CategoriesClientProps> = ({ data }) => {
           title={`Categories (${data.length})`}
           description="Manage categories for your store"
         />
-        <Button onClick={() => router.push(`/categories/new`)}>
-          <Plus className="mr-2 h-4 w-4" /> Add New
-        </Button>
       </div>
       <Separator />
-      <DataTable searchKey="name" columns={columns} data={data} />
+      <DataTable loading={loading} onDeleteSelected={handleDeleteSelected} searchKey="name" columns={columns} data={data} />
       <Heading title="API" description="API Calls for Categories" />
       <Separator />
       <ApiList entityName="categories" entityIdName="categoryId" />

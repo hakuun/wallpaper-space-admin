@@ -1,13 +1,11 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { RiDeleteBin5Line } from "react-icons/ri";
-import { useRouter } from "next/navigation";
-
-import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import { columns, WallpaperColumn } from "./columns";
 import { ApiList } from "@/components/ui/api-list";
@@ -17,9 +15,28 @@ interface WallpaperClientProps {
 }
 
 export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
-  const router = useRouter();
 
-  function handleDeleteSelected() {}
+  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+
+  async function handleDeleteSelected(selection: WallpaperColumn[]) {
+    const ids = selection.map((row) => row.id);
+    try {
+      setLoading(true);
+      await fetch(`/api/wallpaper`, {
+        method: "DELETE",
+        body: JSON.stringify(ids),
+      });
+      toast.success("Wallpaper deleted.");
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        "Make sure you removed all products using this wallpaper first."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <>
@@ -28,21 +45,10 @@ export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
           title={`Wallpaper (${data.length})`}
           description="Manage wallpaper"
         />
-        <div>
-          <Button
-            className="mr-4"
-            variant="destructive"
-            onClick={handleDeleteSelected}
-          >
-            <RiDeleteBin5Line className="mr-2 h-4 w-4" /> Delete Selected
-          </Button>
-          <Button onClick={() => router.push(`/wallpaper/new`)}>
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Button>
-        </div>
+        
       </div>
       <Separator />
-      <DataTable searchKey="url" columns={columns} data={data} />
+      <DataTable loading={loading} onDeleteSelected={handleDeleteSelected} searchKey="url" columns={columns} data={data} />
       <Heading title="API" description="API Calls for Wallpaper" />
       <Separator />
       <ApiList entityName="wallpaper" entityIdName="wallpaperId" />
