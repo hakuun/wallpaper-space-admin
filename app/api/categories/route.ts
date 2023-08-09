@@ -44,3 +44,30 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Internal error", { status: 500 });
   }
 }
+
+
+export async function DELETE(request: NextRequest) {
+	try {
+		const session = await getServerSession();
+
+		const data = await request.json();
+
+		if (!session) {
+			return new NextResponse("Unauthenticated", { status: 403 });
+		}
+
+		if (!data) return new NextResponse("data is required", { status: 400 });
+
+		const res = await prisma.category.deleteMany({
+			where: {
+				id: {
+					in: data,
+				},
+			},
+		});
+		return NextResponse.json(res);
+	} catch (error) {
+		console.log("[WALLPAPER_DELETE]", error);
+		return new NextResponse("Internal error", { status: 500 });
+	}
+}
