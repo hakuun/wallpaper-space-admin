@@ -31,15 +31,11 @@ export async function GET(request: NextRequest) {
 		const pageSize = params.get("pageSize")
 			? Number(params.get("pageSize"))
 			: 20;
-		let where = {};
-
-		if (params.get("where")) {
-			try {
-				where = JSON.parse(params.get("where") as string);
-			} catch {
-				return new NextResponse("Invalid JSON", { status: 400 });
-			}
-		}
+		const categoryId = params.get("categoryId") || undefined;
+		
+		const where = {
+			categoryId,
+		};
 
 		const [count, records] = await prisma.$transaction([
 			prisma.wallpaper.count({ where }),
