@@ -19,16 +19,20 @@ interface CategoriesClientProps {
 
 export const CategoriesClient: React.FC<CategoriesClientProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   async function handleDeleteSelected(selection: CategoryColumn[]) {
     const ids = selection.map((row) => row.id);
     try {
       setLoading(true);
-      await fetch(`/api/categories`, {
+      const res = await fetch(`/api/categories`, {
         method: "DELETE",
         body: JSON.stringify(ids),
       });
+      if (!res.ok) {
+        const { message } = await res.json();
+        return toast.error(message || "something went wrong!");
+      }
       toast.success("Wallpaper deleted.");
       router.refresh();
     } catch (error) {
@@ -49,7 +53,14 @@ export const CategoriesClient: React.FC<CategoriesClientProps> = ({ data }) => {
         />
       </div>
       <Separator />
-      <DataTable loading={loading} onDeleteSelected={handleDeleteSelected} searchKey="name" columns={columns} data={data} />
+      <DataTable
+        page="categories"
+        loading={loading}
+        onDeleteSelected={handleDeleteSelected}
+        searchKey="name"
+        columns={columns}
+        data={data}
+      />
       <Heading title="API" description="API Calls for Categories" />
       <Separator />
       <ApiList entityName="categories" entityIdName="categoryId" />

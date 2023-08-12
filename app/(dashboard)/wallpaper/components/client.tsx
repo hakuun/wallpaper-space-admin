@@ -15,18 +15,21 @@ interface WallpaperClientProps {
 }
 
 export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
-
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   async function handleDeleteSelected(selection: WallpaperColumn[]) {
     const ids = selection.map((row) => row.id);
     try {
       setLoading(true);
-      await fetch(`/api/wallpaper`, {
+      const res = await fetch(`/api/wallpaper`, {
         method: "DELETE",
         body: JSON.stringify(ids),
       });
+      if (!res.ok) {
+        const { message } = await res.json();
+        return toast.error(message || "something went wrong!");
+      }
       toast.success("Wallpaper deleted.");
       router.refresh();
     } catch (error) {
@@ -45,10 +48,16 @@ export const WallpaperClient: React.FC<WallpaperClientProps> = ({ data }) => {
           title={`Wallpaper (${data.length})`}
           description="Manage wallpaper"
         />
-        
       </div>
       <Separator />
-      <DataTable loading={loading} onDeleteSelected={handleDeleteSelected} searchKey="url" columns={columns} data={data} />
+      <DataTable
+        page="wallpaper"
+        loading={loading}
+        onDeleteSelected={handleDeleteSelected}
+        searchKey="url"
+        columns={columns}
+        data={data}
+      />
       <Heading title="API" description="API Calls for Wallpaper" />
       <Separator />
       <ApiList entityName="wallpaper" entityIdName="wallpaperId" />

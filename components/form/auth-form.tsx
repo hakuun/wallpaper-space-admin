@@ -69,8 +69,8 @@ export default function AuthForm() {
           body: JSON.stringify(values),
         });
         if (!res.ok) {
-          const { error } = await res.json();
-          return toast.error(error || "something went wrong!");
+          const { message } = await res.json();
+          return toast.error(message || "something went wrong!");
         }
         await res.json();
       }

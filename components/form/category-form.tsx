@@ -57,16 +57,21 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
   const onSubmit = async (data: CategoryFormValues) => {
     try {
       setLoading(true);
+      let res;
       if (initialData) {
-        await fetch(`/api/categories/${params.categoryId}`, {
+        res = await fetch(`/api/categories/${params.categoryId}`, {
           method: "PATCH",
           body: JSON.stringify(data),
         });
       } else {
-        await fetch(`/api/categories`, {
+        res = await fetch(`/api/categories`, {
           method: "POST",
           body: JSON.stringify(data),
         });
+      }
+      if (!res.ok) {
+        const { message } = await res.json();
+        return toast.error(message || "something went wrong!");
       }
       router.refresh();
       router.push(`/categories`);
@@ -81,9 +86,14 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`/api/categories/${params.categoryId}`, {
+      const res = await fetch(`/api/categories/${params.categoryId}`, {
         method: "DELETE",
       });
+      if (!res.ok) {
+        const { message } = await res.json();
+        return toast.error(message || "something went wrong!");
+      }
+      await res.json();
       router.refresh();
       router.push(`/categories`);
       toast.success("Category deleted.");

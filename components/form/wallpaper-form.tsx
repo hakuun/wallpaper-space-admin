@@ -102,7 +102,14 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
         return toast.error("please upload images");
       }
 
-      await Promise.all(allRequest);
+      const resList = await Promise.all(allRequest);
+
+      for (const res of resList) {
+        if (!res.ok) {
+          const { message } = await res.json();
+          return toast.error(message || "something went wrong!");
+        }
+      }
 
       router.refresh();
       router.push(`/wallpaper`);
@@ -117,9 +124,13 @@ export const WallpaperForm: React.FC<WallpaperFormProps> = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-      await fetch(`/api/wallpaper/${params.wallpaperId}`, {
+      const res = await fetch(`/api/wallpaper/${params.wallpaperId}`, {
         method: "DELETE",
       });
+      if (!res.ok) {
+        const { message } = await res.json();
+        return toast.error(message || "something went wrong!");
+      }
       router.refresh();
       router.push(`/wallpaper`);
       toast.success("Wallpaper deleted.");

@@ -29,9 +29,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onConfirm = async () => {
     try {
       setLoading(true);
-      await fetch(`/api/wallpaper/${data.id}`, {
+      const res = await fetch(`/api/wallpaper/${data.id}`, {
         method: "DELETE",
       });
+      if (!res.ok) {
+        const { message } = await res.json();
+        return toast.error(message || "something went wrong!");
+      }
       toast.success("Wallpaper deleted.");
       router.refresh();
     } catch (error) {
