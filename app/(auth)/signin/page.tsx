@@ -17,13 +17,9 @@ const Auth = async () => {
       "
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Image
-          height="48"
-          width="48"
-          className="mx-auto w-auto"
-          src="/images/logo.png"
-          alt="Logo"
-        />
+        <div className="w-auto flex justify-center">
+          <Image height="50" width="50" src="/images/logo.svg" alt="Logo" />
+        </div>
         <h2
           className="
             mt-6 

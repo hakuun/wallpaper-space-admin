@@ -9,8 +9,8 @@ import { ToastProvider } from "@/providers/toast-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Wallpaper Space",
-  description: "Wallpaper Space",
+  title: "Wallpaper Space Admin",
+  description: "Wallpaper Space Admin",
 };
 
 export default function RootLayout({
