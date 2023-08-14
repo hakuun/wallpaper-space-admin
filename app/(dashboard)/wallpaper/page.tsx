@@ -8,7 +8,7 @@ import { WallpaperClient } from "./components/client";
 const WallpaperPage = async () => {
   const wallpaper = await prisma.wallpaper.findMany({
     orderBy: {
-      createdAt: "desc",
+      updatedAt: "desc",
     },
   });
 
@@ -16,6 +16,7 @@ const WallpaperPage = async () => {
     id: item.id,
     url: item.url,
     isPublished: item.isPublished,
+    updatedAt: format(item.updatedAt, "yyyy-MM-dd hh:mm:ss"),
     createdAt: format(item.createdAt, "yyyy-MM-dd hh:mm:ss"),
   }));
 

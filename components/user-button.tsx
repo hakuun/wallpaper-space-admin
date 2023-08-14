@@ -1,47 +1,49 @@
 "use client";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function UserButton() {
-  const { data, status } = useSession();
+	const { data, status } = useSession();
 
-  if (status === "unauthenticated") {
-    redirect("/signin");
-  }
+	if (status === "unauthenticated") {
+		redirect("/signin");
+	}
 
-  if (!data || !data.user) return null;
+	if (!data || !data.user) return null;
 
-  return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Image
-            src={data.user.image || ""}
-            alt={data.user.name || data.user.email || ""}
-            width={50}
-            height={50}
-            className="rounded-full"
-          />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>{data.user.name}</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => signOut()}>
-            Sign out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
+	return (
+		<div>
+			<DropdownMenu>
+				<DropdownMenuTrigger>
+					<Avatar>
+						<AvatarImage
+							alt={data.user.name || data.user.email || ""}
+							src={data.user.image || ""}
+						/>
+						<AvatarFallback>{data.user.name || data.user.email || "Avatar"}</AvatarFallback>
+					</Avatar>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent>
+					<DropdownMenuLabel>
+            <p>{data.user.name}</p>
+            <p className="text-sm font-normal mt-2">{data.user.email}</p>
+            </DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem className="cursor-pointer" onClick={() => signOut()}>
+						Sign out
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+		</div>
+	);
 }
