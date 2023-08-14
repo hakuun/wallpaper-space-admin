@@ -55,7 +55,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { wallpaperId: string; storeId: string } }
+  { params }: { params: { wallpaperId: string; } }
 ) {
   try {
     const session = await getServerSession();

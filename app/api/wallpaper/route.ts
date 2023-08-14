@@ -45,6 +45,9 @@ export async function GET(request: NextRequest) {
         skip: (page - 1) * pageSize,
         take: pageSize,
         where,
+        orderBy: {
+          updatedAt: "desc",
+        },
       }),
     ]);
 
