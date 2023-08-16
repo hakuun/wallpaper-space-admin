@@ -72,21 +72,15 @@ const authOptions: AuthOptions = {
   },
   callbacks: {
     jwt({ token, user }) {
+      console.log('token', token)
       if (user) token.role = user.role;
       return token;
     },
     session({ session, token }) {
+      console.log('session', session)
       session.user.role = token.role;
       return session;
-    },
-    async signIn({ account, profile }) {
-      console.log('profile', profile)
-      console.log('account', account)
-      if (profile && account?.provider === "google") {
-        return !!(profile?.email_verified && profile?.email?.endsWith("@example.com"))
-      }
-      return true // Do different verification for other providers that don't have `email_verified`
-    },
+    }
   },
 };
 
