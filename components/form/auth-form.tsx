@@ -90,6 +90,7 @@ export default function AuthForm() {
         ...values,
         redirect: false,
       });
+      
       if (callback?.error) {
         toast.error("Invalid credentials!");
       }
@@ -196,7 +197,7 @@ export default function AuthForm() {
             <Button
               disabled={isLoading}
               className="w-full"
-              onClick={() => siginWithProvider("github")}
+              onClick={() => signIn("github")}
               variant={"outline"}
             >
               <FaGithub className="mr-2 w-4 h-4" />
@@ -205,7 +206,7 @@ export default function AuthForm() {
             <Button
               disabled={isLoading}
               className="w-full"
-              onClick={() => siginWithProvider("google")}
+              onClick={() => signIn("google")}
               variant={"outline"}
             >
               <FcGoogle className="mr-2 w-4 h-4" />
