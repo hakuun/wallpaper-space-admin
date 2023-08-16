@@ -1,5 +1,4 @@
 import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
-import type, { Profile as GoogleProfile } from "next-auth";
 import { DefaultJWT } from "next-auth/jwt";
 
 declare module "next-auth" {
@@ -18,9 +17,6 @@ declare module "next-auth" {
 		} & DefaultSession["user"];
 	}
 
-	interface Profile extends GoogleProfile {
-		email_verified?: string;
-	}
 }
 
 declare module "next-auth/jwt" {
