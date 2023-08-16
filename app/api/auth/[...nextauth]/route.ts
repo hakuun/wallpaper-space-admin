@@ -80,6 +80,8 @@ const authOptions: AuthOptions = {
       return session;
     },
     async signIn({ account, profile }) {
+      console.log('profile', profile)
+      console.log('account', account)
       if (profile && account?.provider === "google") {
         return !!(profile?.email_verified && profile?.email?.endsWith("@example.com"))
       }
