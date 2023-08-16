@@ -20,6 +20,13 @@ const authOptions: AuthOptions = {
       httpOptions: {
         timeout: 10000,
       },
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     CredentialsProvider({
       name: "credentials",
